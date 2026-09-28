@@ -510,7 +510,38 @@ exposed in errors or dashboard-facing output.
 ```typescript
 import { AuditHoldClient } from "@zk-payroll/sdk";
 
-const client = new AuditHoldClient(server, "CCONTRACT_ID...");
+### Employer Onboarding Readiness
+
+Before starting an employer payroll workflow, use `checkEmployerReadiness` to verify the employer
+address and signer match, the RPC and payroll contract are available, and the employer account
+exists on the selected network. The check is read-only and returns fixed diagnostic messages; it
+does not include signer errors, addresses, balances, employee data, or salary values in its result.
+
+```typescript
+import { checkEmployerReadiness } from "@zk-payroll/sdk";
+
+const readiness = await checkEmployerReadiness({
+  config: clientConfig,
+  employerAddress,
+  signer,
+});
+
+if (!readiness.canProceed) {
+  for (const check of readiness.checks) {
+    console.error(`[${check.code}] ${check.message}`);
+  }
+  throw new Error(`Employer readiness status: ${readiness.status}`);
+}
+
+// Continue with employer onboarding or PayrollService setup.
+```
+
+If the employer account is missing, create and fund it on the configured network. A `ready`
+result confirms account existence and setup checks; it does not read account balances or guarantee
+that the employer has enough XLM for transaction fees or enough of the payment asset for a payroll
+run.
+
+## Multi-Asset Support
 
 // Check a hold's status (malformed responses parse to state: "unknown", fail closed)
 const hold = await client.getAuditHoldStatus("hold-1", signer);

@@ -1,21 +1,16 @@
 export { PayrollService } from "../payroll";
 export type { Transaction, FilterCriteria } from "../payroll";
 export { PayrollContract } from "../contract";
-export {
-  DEFAULT_CONFIG,
-  ConfigPresets,
-  ConfigBuilder,
-  validateConfig,
-  assertValidConfig,
-} from "../config";
+export { DEFAULT_CONFIG, ConfigPresets, ConfigBuilder } from "../config";
+export type { ClientConfig } from "../config";
+export { checkEmployerReadiness } from "../employer-readiness";
 export type {
-  ClientConfig,
-  RetryPolicyConfig,
-  RetryBudgetsConfig,
-  FeatureFlagsConfig,
-  ConfigValidationErrorDetail,
-  ConfigValidationResult,
-} from "../config";
+  EmployerReadinessCheck,
+  EmployerReadinessCheckId,
+  EmployerReadinessCheckStatus,
+  EmployerReadinessInput,
+  EmployerReadinessResult,
+} from "../employer-readiness";
 export * from "../types";
 
 export {
