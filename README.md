@@ -164,6 +164,46 @@ rejected with `DESTINATION_VALIDATION_UNAVAILABLE` and the fault detail is
 discarded. Rejected values are never reflected in results, errors, progress
 events, or logs — only stable codes and sanitized, actionable messages.
 
+## Withholding configuration validation
+
+`validateWithholdingConfig()` gates tax / statutory withholding rules before
+they are applied to a payroll run. It returns an explicit result —
+`{ ok: true, state: "validated", config, displayEmployeeId }` or
+`{ ok: false, code, message, state }` — and never throws unless you call
+`assertWithholdingConfig()`.
+
+```typescript
+import { PayrollService } from "@zk-payroll/core";
+
+const result = PayrollService.validateWithholdingConfig(
+  { employeeId: "emp-123456", method: "percentage", rate: 12.5 },
+  { expectedEmployeeId: "emp-123456" }
+);
+
+if (!result.ok) {
+  console.error(result.code, result.message); // safe to log: no identifiers, no amounts
+} else {
+  const { method, rate, rounding } = result.config; // normalized, ready to apply
+}
+```
+
+The validator covers the payroll workflow's real failure states: a missing or
+unsupported `method`; missing, negative, zero, out-of-range, or over-precise
+percentage rates (`0 < rate <= 100`, with `maxRate` / `allowZeroRate` policy
+knobs); missing, negative, zero, or malformed fixed amounts; a per-run cap that
+contradicts the configured amount; unsupported rounding modes; empty
+jurisdiction labels; and employee bindings that do not match the run
+(`requireEmployeeId`, `expectedEmployeeId`).
+
+Failure messages carry only stable codes, sanitized text, and a redacted
+employee identifier (`emp***321`); configured amounts are always `[REDACTED]`
+unless `includeAmounts: true` is set for internal debugging.
+`validateBatchWithholdingConfigs()` aggregates per-entry issues with their
+array indexes for per-employee rule sets, `assertWithholdingConfig()` throws a
+typed `WithholdingConfigError` when a hard gate is needed, and
+`PayrollService.validateWithholdingConfig()` exposes the same check as an
+instance and static helper.
+
 ## Event Stream Deduplication
 
 The SDK provides deduplication helpers to prevent processing the same payroll event more than once. This strengthens payroll workflows while keeping private salary and employee data protected.
