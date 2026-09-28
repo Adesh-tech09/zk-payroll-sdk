@@ -97,6 +97,9 @@ export * from "./adapters";
 // ── Polling Helpers ───────────────────────────────────────────────────────────
 export * from "./polling";
 
+// ── Contract Error Remediation ───────────────────────────────────────────────
+export * from "./remediation";
+
 // ── Logging ─────────────────────────────────────────────────────────────────
 export * from "./logging";
 
@@ -152,6 +155,27 @@ export * from "./simulation";
 
 // ── Draft Persistence ───────────────────────────────────────────────────────
 export * from "./draft";
+
+// ── Payroll Request Builder ─────────────────────────────────────────────────
+export {
+  PayrollRequestBuilder,
+  deriveIdempotencyKey,
+  buildDuplicateEmployeeValidationErrors,
+  detectDuplicateEmployeeRecords,
+  findDuplicateEmployeeIds,
+} from "./request";
+export type {
+  DuplicateEmployeeOptions,
+  DuplicateEmployeeRecord,
+  DuplicateEmployeeReport,
+  EmployeeIdentifiedRecord,
+  PayrollRequest,
+  PayrollRequestEntry,
+  PayrollRequestErrorCode,
+  PayrollRequestValidationEntry,
+  PayrollRequestValidationReport,
+  SubmissionContext,
+} from "./request";
 
 // ── History Filter Builders ─────────────────────────────────────────────────
 export * from "./filters";
